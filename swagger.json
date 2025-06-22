@@ -1,0 +1,497 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Produtos - Loja de Departamentos Franca",
+    "description": "API para gerenciamento completo de produtos. Permite operações CRUD (Create, Read, Update, Delete) com MongoDB.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Desenvolvedor Back-End",
+      "email": "dev@loja-franca.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://sua-api-produtos.herokuapp.com",
+      "description": "Servidor de Produção"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor Local"
+    }
+  ],
+  "paths": {
+    "/api/produtos": {
+      "get": {
+        "summary": "Listar todos os produtos",
+        "description": "Retorna uma lista com todos os produtos cadastrados na loja",
+        "tags": ["Produtos"],
+        "responses": {
+          "200": {
+            "description": "Lista de produtos retornada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Produtos listados com sucesso"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Produto"
+                      }
+                    },
+                    "total": {
+                      "type": "integer",
+                      "example": 10
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastrar novo produto",
+        "description": "Cria um novo produto no sistema",
+        "tags": ["Produtos"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProdutoInput"
+              },
+              "example": {
+                "nome": "Smartphone Samsung Galaxy S23",
+                "descricao": "Smartphone com tela de 6.1 polegadas, 128GB",
+                "cor": "Preto",
+                "peso": 168,
+                "tipo": "Eletrônicos",
+                "preco": 2499.99
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Produto cadastrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/produtos/{id}": {
+      "get": {
+        "summary": "Buscar produto por ID",
+        "description": "Retorna um produto específico pelo seu ID",
+        "tags": ["Produtos"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID único do produto",
+            "schema": {
+              "type": "string"
+            },
+            "example": "64a7b8c9d1e2f3a4b5c6d7e8"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produto encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualizar produto existente",
+        "description": "Atualiza os dados de um produto existente",
+        "tags": ["Produtos"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID único do produto",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProdutoUpdate"
+              },
+              "example": {
+                "nome": "Smartphone Samsung Galaxy S23 Ultra",
+                "preco": 3499.99
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Produto atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletar produto",
+        "description": "Remove um produto do sistema",
+        "tags": ["Produtos"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID único do produto",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produto deletado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID inválido"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/produtos/nome/{nome}": {
+      "get": {
+        "summary": "Buscar produto por nome",
+        "description": "Busca produtos que contenham o nome especificado",
+        "tags": ["Produtos"],
+        "parameters": [
+          {
+            "name": "nome",
+            "in": "path",
+            "required": true,
+            "description": "Nome ou parte do nome do produto",
+            "schema": {
+              "type": "string"
+            },
+            "example": "smartphone"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produtos encontrados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "2 produto(s) encontrado(s)"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Produto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nenhum produto encontrado"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Produto": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "ID único do produto",
+            "example": "64a7b8c9d1e2f3a4b5c6d7e8"
+          },
+          "nome": {
+            "type": "string",
+            "description": "Nome do produto",
+            "example": "Smartphone Samsung Galaxy S23"
+          },
+          "descricao": {
+            "type": "string",
+            "description": "Descrição do produto",
+            "example": "Smartphone com tela de 6.1 polegadas"
+          },
+          "cor": {
+            "type": "string",
+            "description": "Cor do produto",
+            "example": "Preto"
+          },
+          "peso": {
+            "type": "number",
+            "description": "Peso em gramas",
+            "example": 168
+          },
+          "tipo": {
+            "type": "string",
+            "description": "Tipo/categoria do produto",
+            "example": "Eletrônicos"
+          },
+          "preco": {
+            "type": "number",
+            "description": "Preço em reais",
+            "example": 2499.99
+          },
+          "dataCadastro": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data do cadastro",
+            "example": "2024-01-15T10:30:00.000Z"
+          }
+        }
+      },
+      "ProdutoInput": {
+        "type": "object",
+        "required": ["nome", "descricao", "cor", "peso", "tipo", "preco"],
+        "properties": {
+          "nome": {
+            "type": "string",
+            "maxLength": 100,
+            "example": "Smartphone Samsung Galaxy S23"
+          },
+          "descricao": {
+            "type": "string",
+            "maxLength": 500,
+            "example": "Smartphone com tela de 6.1 polegadas"
+          },
+          "cor": {
+            "type": "string",
+            "maxLength": 50,
+            "example": "Preto"
+          },
+          "peso": {
+            "type": "number",
+            "minimum": 0,
+            "example": 168
+          },
+          "tipo": {
+            "type": "string",
+            "maxLength": 50,
+            "example": "Eletrônicos"
+          },
+          "preco": {
+            "type": "number",
+            "minimum": 0,
+            "example": 2499.99
+          }
+        }
+      },
+      "ProdutoUpdate": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "descricao": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "cor": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "peso": {
+            "type": "number",
+            "minimum": 0
+          },
+          "tipo": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "preco": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Operação realizada com sucesso"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Produto"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Descrição do erro"
+          },
+          "error": {
+            "type": "string",
+            "example": "Detalhes do erro"
+          }
+        }
+      }
+    },
+    "responses": {
+      "NotFound": {
+        "description": "Produto não encontrado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Erro de validação",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Dados inválidos"
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Erro interno do servidor",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Produtos",
+      "description": "Gerenciamento de produtos da loja"
+    }
+  ]
+}
