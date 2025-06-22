@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require("express")
 const mongoose = require("mongoose")
 const cors = require("cors")
@@ -12,7 +13,7 @@ app.use(cors())
 app.use(express.json())
 
 // Conexão MongoDB
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/loja-produtos"
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://vitaokibao:vPpqh3TaGKwy1izd@cluster0.jr5rxkf.mongodb.net/loja-produtos?retryWrites=true&w=majority&appName=Cluster0"
 
 mongoose
   .connect(MONGODB_URI, {
